@@ -7,6 +7,10 @@
     "downlevelIteration": true,
     "lib": ["es6"],
     "outDir": "dist",
-    "moduleResolution": "Node"
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "Node",
+    "skipLibCheck": true
   }
 }
