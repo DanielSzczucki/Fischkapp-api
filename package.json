@@ -7,8 +7,7 @@
   "author": "Nerdbord",
   "license": "MIT",
   "scripts": {
-    "server": "node index.ts",
-    "startDev": "tsnd index.ts",
+    "server": "ts-node index.ts",
     "start": "ts-node index.ts"
   },
   "devDependencies": {
