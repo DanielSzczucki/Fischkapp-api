@@ -8,9 +8,6 @@
     "lib": ["es6"],
     "outDir": "dist",
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "moduleResolution": "Node",
-    "skipLibCheck": true
+    "moduleResolution": "Node"
   }
 }
