@@ -1,8 +1,11 @@
+import { SchemaDefinitionProperty } from "mongoose";
+
 export interface CreateCardPayload {
   front: string;
   back: string;
   tags: string[];
   author: string;
+  date?: DateConstructor | SchemaDefinitionProperty<DateConstructor>;
 }
 
 export interface UpdateCardPayload {
@@ -17,5 +20,6 @@ export interface CardPayload {
   back: string;
   tags: string[];
   author: string;
+  date?: DateConstructor | SchemaDefinitionProperty<DateConstructor>;
   __v: number;
 }

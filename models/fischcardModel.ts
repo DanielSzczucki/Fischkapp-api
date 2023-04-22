@@ -22,6 +22,10 @@ export const cardSchema = new mongoose.Schema<CreateCardPayload>({
     type: String,
     required: [true, "Author required"],
   },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 export const Card: CreateCardModel = mongoose.model<
