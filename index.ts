@@ -6,8 +6,11 @@ import express from "express";
 const PORT = parseInt(process.env.PORT) || 4000;
 
 const app = express();
+import { fischcardRouter } from "./routers/fischcardRouter";
 
 app.use(express.json());
+
+app.use("/cards", fischcardRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${process.env.PORT}`);
