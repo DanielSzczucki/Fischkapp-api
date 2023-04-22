@@ -1,22 +1,29 @@
-import mongoose from "mongoose";
+import mongoose, { createConnection } from "mongoose";
+import { CreateCardPayload } from "../utils/types";
 
-export const cardSchema = new mongoose.Schema({
+export interface CreateCardModel
+  extends mongoose.Model<mongoose.Document<CreateCardPayload>> {}
+
+export const cardSchema = new mongoose.Schema<CreateCardPayload>({
   front: {
     type: String,
-    required: true,
+    required: [true, "Front info required"],
   },
   back: {
     type: String,
-    required: true,
+    required: [true, "Back info required"],
   },
   tags: {
     type: [String],
-    required: true,
+    required: [true, "Tags required"],
   },
   author: {
     type: String,
-    required: true,
+    required: [true, "Author required"],
   },
 });
 
-export const card = new mongoose.Model("card", cardSchema);
+export const Card: CreateCardModel = mongoose.model<
+  CreateCardPayload,
+  CreateCardModel
+>("Card", cardSchema);
