@@ -1,16 +1,29 @@
 import express from "express";
 import mongoose from "mongoose";
-import { cardSchema } from "../models/fischcardModel";
+import { Card } from "../models/fischcardModel";
+import { db } from "../utils/db";
 
 export const fischcardRouter = express.Router();
 
-const card = new mongoose.Model("card", cardSchema);
-//make mockup
-//make db
+fischcardRouter.post("/cards", async (req, res) => {
+  //connect to db
+  db;
+  const TestCard = new Card(req.body);
+  console.log(req.body);
 
-fischcardRouter.post("/cards", (req, res) => {
-  //take cads or one cards
-  //find card?
-  //is exist - cant add - show notification and abort
-  //isnt exist, save to db
+  const foundCard = await Card.find({ front: req.body.front });
+
+  if (!foundCard) {
+    await TestCard.save();
+
+    res.json({
+      message: `${req.body.front} saved `,
+      card: "foundCard",
+    });
+  } else {
+    res.status(409).json({
+      message: "This card arleady exist in database",
+      card: foundCard,
+    });
+  }
 });
