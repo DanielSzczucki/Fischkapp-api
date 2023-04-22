@@ -16,7 +16,7 @@ fischcardRouter
     console.log(req.body);
 
     //check is card exist with same frnt?
-    const foundCard = await Card.find({ front: req.body.front });
+    const foundCard = await Card.findOne({ front: req.body.front });
 
     //isnt exist in db, save to db
     if (!foundCard) {
