@@ -1,13 +1,9 @@
 import express from "express";
 import { Card } from "../models/fischcardModel";
-import { db } from "../utils/db";
-import {
-  CardPayload,
-  CreateCardPayload,
-  UpdateCardPayload,
-} from "../utils/types";
+
+import { CreateCardPayload, UpdateCardPayload } from "../utils/types";
 import { HydratedDocument } from "mongoose";
-import { HydratedArraySubdocument } from "mongoose";
+import { db } from "../utils/db";
 
 export const fischcardRouter = express.Router();
 
@@ -44,6 +40,7 @@ fischcardRouter
 
   .put("/cards/:id", async (req, res) => {
     try {
+      //connect to db
       db;
       const updatedCardData: UpdateCardPayload = req.body;
 
@@ -76,26 +73,22 @@ fischcardRouter
       }
     } catch (error) {
       res.status(500).json({
-        message: "Something went wrong, please try again later",
+        message: error.message,
       });
     }
   })
 
-  //   GET /cards // Gets all the records
-  // GET /cards/author/:author // Gets all the records for specific author
-  // GET /cards/tags/:tag // Gets all the records by specific tag
-
   .get("/cards", async (req, res) => {
     try {
+      //connect to db
       db;
 
       const allCards = await Card.find({}).sort({ date: "asc" });
 
       if (!allCards) {
-        // const sortedCards = allCards.sort({date:-1})
         res.json({
           message: "There is no cards",
-          cards: allCards,
+          cards: null,
         });
       } else {
         res.json({
@@ -105,7 +98,67 @@ fischcardRouter
       }
     } catch (error) {
       res.status(500).json({
-        message: "All cards are downloaded from db",
+        message: error.message,
+        cards: null,
+      });
+    }
+  })
+
+  .get("/cards/author/:autor", async (req, res) => {
+    try {
+      //connect to db
+      db;
+
+      const allCardsByAuthor = await Card.find({
+        author: { $regex: req.params.autor, $options: "i" },
+      }).sort({
+        date: "asc",
+      });
+
+      if (!allCardsByAuthor) {
+        res.json({
+          message: `There is no cards with tag: ${req.params.autor}`,
+          cards: null,
+        });
+      } else {
+        res.json({
+          message: `All cards by tag:  ${req.params.autor}  are downloaded from db`,
+          cards: allCardsByAuthor,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+        cards: null,
+      });
+    }
+  })
+
+  .get("/cards/tags/:tag", async (req, res) => {
+    try {
+      // check connection to db
+      db;
+
+      const allCardsByTag = await Card.find({
+        tags: { $regex: req.params.tag, $options: "i" },
+      }).sort({
+        date: "asc",
+      });
+
+      if (!allCardsByTag) {
+        res.json({
+          message: `There is no cards with tag: ${req.params.tag}`,
+          cards: null,
+        });
+      } else {
+        res.json({
+          message: `All cards by tag:  ${req.params.tag}  are downloaded from db`,
+          cards: allCardsByTag,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
         cards: null,
       });
     }
