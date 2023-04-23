@@ -1,7 +1,11 @@
 import express from "express";
 import { Card } from "../models/fischcardModel";
 
-import { CreateCardPayload, UpdateCardPayload } from "../utils/types";
+import {
+  CardPayload,
+  CreateCardPayload,
+  UpdateCardPayload,
+} from "../utils/types";
 import { HydratedDocument } from "mongoose";
 import { db } from "../utils/db";
 
@@ -9,9 +13,8 @@ export const fischcardRouter = express.Router();
 
 fischcardRouter
   .post("/cards", async (req, res) => {
-    //connect to db
+    //set db connection
     db;
-
     //create nev card with body value
     const card = new Card(req.body);
     console.log(req.body);
@@ -40,7 +43,7 @@ fischcardRouter
 
   .put("/cards/:id", async (req, res) => {
     try {
-      //connect to db
+      //set db connection
       db;
       const updatedCardData: UpdateCardPayload = req.body;
 
@@ -80,9 +83,8 @@ fischcardRouter
 
   .get("/cards", async (req, res) => {
     try {
-      //connect to db
+      //set db connection
       db;
-
       const allCards = await Card.find({}).sort({ date: "asc" });
 
       if (!allCards) {
@@ -106,9 +108,8 @@ fischcardRouter
 
   .get("/cards/author/:autor", async (req, res) => {
     try {
-      //connect to db
+      //set db connection
       db;
-
       const allCardsByAuthor = await Card.find({
         author: { $regex: req.params.autor, $options: "i" },
       }).sort({
@@ -136,9 +137,8 @@ fischcardRouter
 
   .get("/cards/tags/:tag", async (req, res) => {
     try {
-      // check connection to db
+      //set db connection
       db;
-
       const allCardsByTag = await Card.find({
         tags: { $regex: req.params.tag, $options: "i" },
       }).sort({
@@ -160,6 +160,42 @@ fischcardRouter
       res.status(500).json({
         message: error.message,
         cards: null,
+      });
+    }
+  })
+  .delete("/card/:id", async (req, res) => {
+    //set db connection
+    db;
+    //find card
+    const foundCardById: CardPayload = await Card.findOne({
+      _id: req.params.id,
+    });
+
+    if (!foundCardById) {
+      res.json({
+        message: `There is no card with id:${req.params.id}`,
+        card: null,
+      });
+    }
+    //if 5 minutes have passed since it was added
+    const currentTime = new Date();
+    const createdAtTime = new Date(`${foundCardById.date}`);
+    const timeDifferenceInMinutes =
+      (currentTime.getTime() - createdAtTime.getTime()) / (1000 * 60);
+
+    if (timeDifferenceInMinutes < 5) {
+      res.status(403).json({
+        message:
+          "Cannot delete card until 5 minutes have passed since creation time",
+        card: null,
+      });
+    } else {
+      //find and delete
+      const deletedCard = await Card.findByIdAndRemove({ _id: req.params.id });
+
+      res.json({
+        message: `Deleted card with id: ${req.params.id}`,
+        card: deletedCard,
       });
     }
   });
