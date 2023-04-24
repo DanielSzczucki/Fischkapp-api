@@ -85,7 +85,7 @@ fischcardRouter
           cards: allCards,
         });
       } else {
-        res.json({
+        res.status(404).json({
           message: `There is no cards`,
           cards: null,
         });
@@ -111,7 +111,7 @@ fischcardRouter
           cards: allCards,
         });
       } else {
-        res.json({
+        res.status(404).json({
           message: `There is no cards with: ${key}: ${value}`,
           cards: null,
         });
@@ -129,7 +129,7 @@ fischcardRouter
       const key = "tags";
       const value = req.params.tag;
       const query = prepareQueryForDb(key, value);
-      const allCards: CardPayload[] = await getAllCardsByQuery(query);
+      const allCards: Error | CardPayload[] = await getAllCardsByQuery(query);
 
       if (allCards) {
         res.json({
@@ -137,7 +137,7 @@ fischcardRouter
           cards: allCards,
         });
       } else {
-        res.json({
+        res.status(404).json({
           message: `There is no cards with: ${key}: ${value}`,
           cards: null,
         });
