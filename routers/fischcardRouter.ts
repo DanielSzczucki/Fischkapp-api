@@ -1,13 +1,13 @@
 import express from "express";
 import { Card } from "../models/fischcardModel";
-
-import {
-  CardPayload,
-  CreateCardPayload,
-  UpdateCardPayload,
-} from "../utils/types";
-import { HydratedDocument } from "mongoose";
+import { CardPayload, UpdateCardPayload } from "../utils/types";
 import { db } from "../utils/db";
+import {
+  cardValidationByFrontValue,
+  getAllCardsByQuery,
+  prepareQueryForDb,
+  updateCard,
+} from "../services/fischcard.service";
 
 export const fischcardRouter = express.Router();
 
@@ -43,93 +43,82 @@ fischcardRouter
 
   .put("/cards/:id", async (req, res) => {
     try {
-      //set db connection
-      db;
+      const cardId = req.params.id;
       const updatedCardData: UpdateCardPayload = req.body;
+      const cardFrontValue = req.body.front;
 
-      //check, is card with the fron arleady exist in db?
-      const existingCard = await Card.findOne({ front: updatedCardData.front });
+      const existingCard = await cardValidationByFrontValue(
+        cardFrontValue,
+        cardId
+      );
 
-      if (existingCard && existingCard._id.toString() !== req.params.id) {
+      if (existingCard) {
         res.status(409).json({
-          message: `${updatedCardData.front} arleady exist in db`,
+          message: `${cardFrontValue} arleady exist in db`,
           card: existingCard,
         });
         return;
-      }
-
-      //update card
-      const updatedCard: HydratedDocument<CreateCardPayload> =
-        await Card.findOneAndUpdate({ _id: req.params.id }, updatedCardData, {
-          new: true,
-        });
-
-      if (updatedCard) {
-        res.json({
-          message: `Card ${updatedCard.front} updated`,
-          card: updatedCard,
-        });
       } else {
-        res.status(404).json({
-          message: `Card with ID ${req.params.id} not found`,
+        // //update card
+        const updatedCard = await updateCard(updatedCardData, cardId);
+
+        res.json({
+          message: `Card: ${updatedCardData.front}, updated`,
+          card: updatedCard,
         });
       }
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message: "Something went wrong",
       });
     }
   })
 
   .get("/cards", async (req, res) => {
     try {
-      //set db connection
-      db;
-      const allCards = await Card.find({}).sort({ date: "asc" });
+      const query = {};
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
 
-      if (!allCards) {
+      if (allCards) {
         res.json({
-          message: "There is no cards",
-          cards: null,
+          message: `All cards are downloaded from db`,
+          cards: allCards,
         });
       } else {
         res.json({
-          message: "All cards are downloaded from db",
-          cards: allCards,
+          message: `There is no cards`,
+          cards: null,
         });
       }
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message: "Something went wrong",
         cards: null,
       });
     }
   })
 
-  .get("/cards/author/:autor", async (req, res) => {
+  .get("/cards/author/:author", async (req, res) => {
     try {
-      //set db connection
-      db;
-      const allCardsByAuthor = await Card.find({
-        author: { $regex: req.params.autor, $options: "i" },
-      }).sort({
-        date: "asc",
-      });
+      const key = "author";
+      const value = req.params.author;
+      const query = prepareQueryForDb(key, value);
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
 
-      if (!allCardsByAuthor) {
+      if (allCards) {
         res.json({
-          message: `There is no cards with tag: ${req.params.autor}`,
-          cards: null,
+          message: `All cards by ${key}:  ${value},  are downloaded from db`,
+          cards: allCards,
         });
       } else {
         res.json({
-          message: `All cards by tag:  ${req.params.autor}  are downloaded from db`,
-          cards: allCardsByAuthor,
+          message: `There is no cards with: ${key}: ${value}`,
+          cards: null,
         });
       }
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message: "Something went wrong",
         cards: null,
       });
     }
@@ -137,65 +126,26 @@ fischcardRouter
 
   .get("/cards/tags/:tag", async (req, res) => {
     try {
-      //set db connection
-      db;
-      const allCardsByTag = await Card.find({
-        tags: { $regex: req.params.tag, $options: "i" },
-      }).sort({
-        date: "asc",
-      });
+      const key = "tags";
+      const value = req.params.tag;
+      const query = prepareQueryForDb(key, value);
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
 
-      if (!allCardsByTag) {
+      if (allCards) {
         res.json({
-          message: `There is no cards with tag: ${req.params.tag}`,
-          cards: null,
+          message: `All cards by ${key}:  ${value}, are downloaded from db`,
+          cards: allCards,
         });
       } else {
         res.json({
-          message: `All cards by tag:  ${req.params.tag}  are downloaded from db`,
-          cards: allCardsByTag,
+          message: `There is no cards with: ${key}: ${value}`,
+          cards: null,
         });
       }
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message: "Something went wrong",
         cards: null,
-      });
-    }
-  })
-  .delete("/card/:id", async (req, res) => {
-    //set db connection
-    db;
-    //find card
-    const foundCardById: CardPayload = await Card.findOne({
-      _id: req.params.id,
-    });
-
-    if (!foundCardById) {
-      res.json({
-        message: `There is no card with id:${req.params.id}`,
-        card: null,
-      });
-    }
-    //if 5 minutes have passed since it was added
-    const currentTime = new Date();
-    const createdAtTime = new Date(`${foundCardById.date}`);
-    const timeDifferenceInMinutes =
-      (currentTime.getTime() - createdAtTime.getTime()) / (1000 * 60);
-
-    if (timeDifferenceInMinutes < 5) {
-      res.status(403).json({
-        message:
-          "Cannot delete card until 5 minutes have passed since creation time",
-        card: null,
-      });
-    } else {
-      //find and delete
-      const deletedCard = await Card.findByIdAndRemove({ _id: req.params.id });
-
-      res.json({
-        message: `Deleted card with id: ${req.params.id}`,
-        card: deletedCard,
       });
     }
   });
