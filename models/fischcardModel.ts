@@ -1,4 +1,4 @@
-import mongoose, { createConnection } from "mongoose";
+import mongoose from "mongoose";
 import { CreateCardPayload } from "../utils/types";
 
 export interface CreateCardModel
