@@ -67,5 +67,5 @@ export const deleteCardWhenTimePassed = async (
   if (timeDifferenceInMinutes <= minutes) {
     const deletedCard = await Card.findByIdAndDelete(card._id);
     return deletedCard as CardPayload;
-  }
+  } else throw Error("5 miutes passed, you cant delete the post");
 };
