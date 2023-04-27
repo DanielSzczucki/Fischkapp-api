@@ -12,18 +12,14 @@ type QueryRegExType = { [key: string]: { $regex: string; $options: string } };
 export const getAllCardsByQuery = async (
   query: QueryRegExType
 ): Promise<CardPayload[]> => {
-  try {
-    //connect to db
-    db;
-    //take cards
-    const allCardsByQuery = Card.find(query).sort({
-      date: "asc",
-    });
+  //connect to db
+  db;
+  //take cards
+  const allCardsByQuery = Card.find(query).sort({
+    date: "asc",
+  });
 
-    return allCardsByQuery as Promise<CardPayload[]>;
-  } catch (error) {
-    throw error;
-  }
+  return allCardsByQuery as Promise<CardPayload[]>;
 };
 
 export const prepareQueryForDb = (key: string, value: string) => {
@@ -63,10 +59,10 @@ export const deleteCardWhenTimePassed = async (
   const currentTime = new Date();
   const cardCreationTime = new Date(`${card.date}`);
   const timeDifferenceInMinutes =
-    (currentTime.getTime() - cardCreationTime.getTime()) / (1000 * 60);
+    (currentTime.getTime() - cardCreationTime.getTime()) / 60000;
 
   if (timeDifferenceInMinutes <= minutes) {
-    const deletedCard = Card.findByIdAndDelete(card._id);
-    return deletedCard;
+    const deletedCard = await Card.findByIdAndDelete(card._id);
+    return deletedCard as CardPayload;
   }
 };
