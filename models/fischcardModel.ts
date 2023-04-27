@@ -1,10 +1,6 @@
 import mongoose, { HydratedDocument, model } from "mongoose";
 import { CreateCardPayload } from "../utils/types";
 
-// export interface CreateCardModel
-//   extends mongoose.Model<mongoose.Document<CreateCardPayload>> {}
-
-//comment for pullreq
 export const cardSchema = new mongoose.Schema<CreateCardPayload>({
   front: {
     type: String,
