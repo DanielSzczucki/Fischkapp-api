@@ -1,6 +1,10 @@
 import express from "express";
 import { Card } from "../models/fischcardModel";
-import { CardPayload, UpdateCardPayload } from "../utils/types";
+import {
+  CardPayload,
+  CreateCardPayload,
+  UpdateCardPayload,
+} from "../utils/types";
 import { db } from "../utils/db";
 import {
   cardValidationByFrontValue,
@@ -8,6 +12,7 @@ import {
   prepareQueryForDb,
   updateCard,
 } from "../services/fischcard.service";
+import { HydratedDocument } from "mongoose";
 
 export const fischcardRouter = express.Router();
 
@@ -16,7 +21,7 @@ fischcardRouter
     //set db connection
     db;
     //create nev card with body value
-    const card = new Card(req.body);
+    const card: HydratedDocument<CreateCardPayload> = new Card(req.body);
     console.log(req.body);
 
     //check is card exist with same frnt?

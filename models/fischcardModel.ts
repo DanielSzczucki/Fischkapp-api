@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument, model } from "mongoose";
 import { CreateCardPayload } from "../utils/types";
 
-export interface CreateCardModel
-  extends mongoose.Model<mongoose.Document<CreateCardPayload>> {}
+// export interface CreateCardModel
+//   extends mongoose.Model<mongoose.Document<CreateCardPayload>> {}
 
 //comment for pullreq
 export const cardSchema = new mongoose.Schema<CreateCardPayload>({
@@ -28,7 +28,4 @@ export const cardSchema = new mongoose.Schema<CreateCardPayload>({
   },
 });
 
-export const Card: CreateCardModel = mongoose.model<
-  CreateCardPayload,
-  CreateCardModel
->("Card", cardSchema);
+export const Card = model<CreateCardPayload>("Card", cardSchema);

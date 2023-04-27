@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface CreateCardPayload {
   front: string;
   back: string;
@@ -13,7 +15,7 @@ export interface UpdateCardPayload {
 }
 
 export interface CardPayload {
-  _id: string;
+  _id: Types.ObjectId;
   front: string;
   back: string;
   tags: string[];

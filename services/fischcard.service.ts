@@ -7,7 +7,11 @@ import {
   UpdateCardPayload,
 } from "../utils/types";
 
-export const getAllCardsByQuery = async (query: QueryOptions) => {
+type QueryRegExType = { [key: string]: { $regex: string; $options: string } };
+
+export const getAllCardsByQuery = async (
+  query: QueryRegExType
+): Promise<CardPayload[]> => {
   try {
     //connect to db
     db;
@@ -16,15 +20,14 @@ export const getAllCardsByQuery = async (query: QueryOptions) => {
       date: "asc",
     });
 
-    return allCardsByQuery;
+    return allCardsByQuery as Promise<CardPayload[]>;
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 
-type query = { [key: string]: { $regex: string; $options: string } };
 export const prepareQueryForDb = (key: string, value: string) => {
-  return { [key]: { $regex: value, $options: "i" } } as query;
+  return { [key]: { $regex: value, $options: "i" } } as QueryRegExType;
 };
 
 export const cardValidationByFrontValue = async (
