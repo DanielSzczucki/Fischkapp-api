@@ -1,6 +1,6 @@
 import { db } from "../utils/db";
 import { Card } from "../models/fischcardModel";
-import { HydratedDocument, QueryOptions } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import {
   CardPayload,
   CreateCardPayload,
@@ -15,15 +15,18 @@ export const getAllCardsByQuery = async (
   //connect to db
   db;
   //take cards
-  const allCardsByQuery = Card.find(query).sort({
+  const allCardsByQuery: CardPayload[] = await Card.find(query).sort({
     date: "asc",
   });
 
-  return allCardsByQuery as Promise<CardPayload[]>;
+  return allCardsByQuery;
 };
 
-export const prepareQueryForDb = (key: string, value: string) => {
-  return { [key]: { $regex: value, $options: "i" } } as QueryRegExType;
+export const prepareQueryForDb = (
+  key: string,
+  value: string
+): QueryRegExType => {
+  return { [key]: { $regex: value, $options: "i" } };
 };
 
 export const cardValidationByFrontValue = async (
@@ -33,7 +36,7 @@ export const cardValidationByFrontValue = async (
   //set db connection
   db;
   //check, is card with the front arleady exist in db?
-  const existingCard = await Card.findOne({ front: cardFront });
+  const existingCard: CardPayload = await Card.findOne({ front: cardFront });
 
   return existingCard;
 };
