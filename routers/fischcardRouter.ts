@@ -156,7 +156,7 @@ fischcardRouter
     }
   })
 
-  .delete("/card/:id", async (req, res) => {
+  .delete("/cards/:id", async (req, res) => {
     db;
 
     const foundCard: CardPayload = await Card.findById(req.params.id);
