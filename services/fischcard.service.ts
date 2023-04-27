@@ -55,3 +55,18 @@ export const updateCard = async (
 
   return updatedCard;
 };
+
+export const deleteCardWhenTimePassed = async (
+  card: CardPayload,
+  minutes: number
+): Promise<CardPayload> => {
+  const currentTime = new Date();
+  const cardCreationTime = new Date(`${card.date}`);
+  const timeDifferenceInMinutes =
+    (currentTime.getTime() - cardCreationTime.getTime()) / (1000 * 60);
+
+  if (timeDifferenceInMinutes <= minutes) {
+    const deletedCard = Card.findByIdAndDelete(card._id);
+    return deletedCard;
+  }
+};

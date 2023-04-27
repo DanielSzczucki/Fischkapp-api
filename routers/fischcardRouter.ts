@@ -8,6 +8,7 @@ import {
 import { db } from "../utils/db";
 import {
   cardValidationByFrontValue,
+  deleteCardWhenTimePassed,
   getAllCardsByQuery,
   prepareQueryForDb,
   updateCard,
@@ -134,7 +135,7 @@ fischcardRouter
       const key = "tags";
       const value = req.params.tag;
       const query = prepareQueryForDb(key, value);
-      const allCards: Error | CardPayload[] = await getAllCardsByQuery(query);
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
 
       if (allCards) {
         res.json({
@@ -153,4 +154,28 @@ fischcardRouter
         cards: null,
       });
     }
+  })
+
+  .delete("/card/:id", async (req, res) => {
+    db;
+
+    const foundCard: CardPayload = await Card.findById(req.params.id);
+
+    //if card does'nt exist
+    if (!foundCard) {
+      res.status(404).json({
+        message: `There is no card with id:${req.params.id}`,
+        card: null,
+      });
+    }
+
+    const deletedCard: CardPayload = await deleteCardWhenTimePassed(
+      foundCard,
+      5
+    );
+
+    res.json({
+      message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
+      card: deletedCard,
+    });
   });
