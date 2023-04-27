@@ -159,23 +159,29 @@ fischcardRouter
   .delete("/cards/:id", async (req, res) => {
     db;
 
-    const foundCard: CardPayload = await Card.findById(req.params.id);
+    try {
+      const foundCard: CardPayload = await Card.findById(req.params.id);
+      //if card does'nt exist
+      if (!foundCard) {
+        res.status(404).json({
+          message: `There is no card with id:${req.params.id}`,
+          card: null,
+        });
+      }
 
-    //if card does'nt exist
-    if (!foundCard) {
-      res.status(404).json({
-        message: `There is no card with id:${req.params.id}`,
-        card: null,
+      const deletedCard: CardPayload = await deleteCardWhenTimePassed(
+        foundCard,
+        5
+      );
+
+      res.json({
+        message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
+        card: deletedCard,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong",
+        cards: null,
       });
     }
-
-    const deletedCard: CardPayload = await deleteCardWhenTimePassed(
-      foundCard,
-      5
-    );
-
-    res.json({
-      message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
-      card: deletedCard,
-    });
   });
