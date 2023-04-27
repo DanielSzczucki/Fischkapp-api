@@ -1,18 +1,27 @@
 import express from "express";
 import { Card } from "../models/fischcardModel";
+import {
+  CardPayload,
+  CreateCardPayload,
+  UpdateCardPayload,
+} from "../utils/types";
 import { db } from "../utils/db";
-import { CreateCardPayload, UpdateCardPayload } from "../utils/types";
+import {
+  cardValidationByFrontValue,
+  getAllCardsByQuery,
+  prepareQueryForDb,
+  updateCard,
+} from "../services/fischcard.service";
 import { HydratedDocument } from "mongoose";
 
 export const fischcardRouter = express.Router();
 
 fischcardRouter
   .post("/cards", async (req, res) => {
-    //connect to db
+    //set db connection
     db;
-
     //create nev card with body value
-    const card = new Card(req.body);
+    const card: HydratedDocument<CreateCardPayload> = new Card(req.body);
     console.log(req.body);
 
     //check is card exist with same frnt?
@@ -37,35 +46,111 @@ fischcardRouter
     }
   })
 
-  .put("cards/:id", async (req, res) => {
+  .put("/cards/:id", async (req, res) => {
     try {
+      const cardId = req.params.id;
       const updatedCardData: UpdateCardPayload = req.body;
+      const cardFrontValue = req.body.front;
 
-      //find card to update in db
-      const foundCard: HydratedDocument<CreateCardPayload> =
-        await Card.findById(req.params.id);
+      const existingCard = await cardValidationByFrontValue(
+        cardFrontValue,
+        cardId
+      );
 
-      if (updatedCardData.front !== foundCard.front) {
-        //update card values
-        Object.assign(foundCard, updatedCardData);
-
-        foundCard.save();
-        //take updated card
-        const updatedCard = await Card.findById(req.params.id);
+      if (existingCard) {
+        res.status(409).json({
+          message: `${cardFrontValue} arleady exist in db`,
+          card: existingCard,
+        });
+        return;
+      } else {
+        // //update card
+        const updatedCard = await updateCard(updatedCardData, cardId);
 
         res.json({
-          message: `Card ${foundCard.front} updated`,
+          message: `Card: ${updatedCardData.front}, updated`,
           card: updatedCard,
-        });
-      } else {
-        res.status(409).json({
-          message: `${updatedCardData.front} arleady exist in db`,
-          card: foundCard,
         });
       }
     } catch (error) {
       res.status(500).json({
-        message: "Something went wrong, please try again later",
+        message: "Something went wrong",
+      });
+    }
+  })
+
+  .get("/cards", async (req, res) => {
+    try {
+      const query = {};
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
+
+      if (allCards) {
+        res.json({
+          message: `All cards are downloaded from db`,
+          cards: allCards,
+        });
+      } else {
+        res.status(404).json({
+          message: `There is no cards`,
+          cards: null,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong",
+        cards: null,
+      });
+    }
+  })
+
+  .get("/cards/author/:author", async (req, res) => {
+    try {
+      const key = "author";
+      const value = req.params.author;
+      const query = prepareQueryForDb(key, value);
+      const allCards: CardPayload[] = await getAllCardsByQuery(query);
+
+      if (allCards) {
+        res.json({
+          message: `All cards by ${key}:  ${value},  are downloaded from db`,
+          cards: allCards,
+        });
+      } else {
+        res.status(404).json({
+          message: `There is no cards with: ${key}: ${value}`,
+          cards: null,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong",
+        cards: null,
+      });
+    }
+  })
+
+  .get("/cards/tags/:tag", async (req, res) => {
+    try {
+      const key = "tags";
+      const value = req.params.tag;
+      const query = prepareQueryForDb(key, value);
+      const allCards: Error | CardPayload[] = await getAllCardsByQuery(query);
+
+      if (allCards) {
+        res.json({
+          message: `All cards by ${key}:  ${value}, are downloaded from db`,
+          cards: allCards,
+        });
+      } else {
+        res.status(404).json({
+          message: `There is no cards with: ${key}: ${value}`,
+          cards: null,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Something went wrong",
+        cards: null,
       });
     }
   });

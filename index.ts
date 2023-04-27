@@ -7,8 +7,11 @@ import { fischcardRouter } from "./routers/fischcardRouter";
 const PORT = parseInt(process.env.PORT) || 4000;
 
 const app = express();
+import { fischcardRouter } from "./routers/fischcardRouter";
 
 app.use(express.json());
+app.use("/", fischcardRouter);
+
 app.use("/", fischcardRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
