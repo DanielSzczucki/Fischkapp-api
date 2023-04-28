@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import { fischcardRouter } from "./routers/fischcardRouter";
+import { fischcardRouter } from "./src/routers/fischcardRouter";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "./controllers/auth.controller";
+import { authMiddleware } from "./src/controllers/auth.controller";
 
 const PORT = parseInt(process.env.PORT) || 4000;
 const CORS_DOMAIN_ALLOWED = process.env.CORS_DOMAIN;
