@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import { fischcardRouter } from "./routers/fischcardRouter";
@@ -12,12 +12,9 @@ const CORS_DOMAIN_ALLOWED = process.env.CORS_DOMAIN;
 const app = express();
 
 app.use(cors({ origin: CORS_DOMAIN_ALLOWED }));
-
 app.use(express.json());
-app.use("/", fischcardRouter);
-
 app.use(cookieParser());
-
+app.use("/", fischcardRouter);
 app.use("/", authMiddleware, fischcardRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
