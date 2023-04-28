@@ -6,7 +6,7 @@
     "target": "ES6",
     "downlevelIteration": true,
     "lib": ["es6"],
-    "outDir": "dist",
+    "outDir": "./dist",
     "esModuleInterop": true,
     "moduleResolution": "Node"
   }
