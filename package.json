@@ -23,6 +23,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^7.0.3",
+    "tsc": "^2.0.4",
     "typescript": "^5.0.4"
   }
 }
