@@ -10,7 +10,7 @@
     "build": "npm install && tsc",
     "start": "node ./dist/index.js",
     "server": "ts-node index.ts",
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
@@ -19,7 +19,6 @@
     "@types/jest": "^29.5.1",
     "@types/node-fetch": "^2.6.3",
     "@types/supertest": "^2.0.12",
-    "node-fetch": "^2.6.9",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
