@@ -112,7 +112,7 @@ fischcardRouter
       const allCards: CardPayload[] = await getAllCardsByQuery(query);
 
       if (allCards) {
-        res.json({
+        res.status(200).json({
           message: `All cards by ${key}:  ${value},  are downloaded from db`,
           cards: allCards,
         });
