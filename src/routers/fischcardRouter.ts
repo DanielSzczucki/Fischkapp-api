@@ -23,7 +23,6 @@ fischcardRouter
     db;
     //create nev card with body value
     const card: HydratedDocument<CreateCardPayload> = new Card(req.body);
-    console.log(req.body);
 
     //check is card exist with same frnt?
     const foundCard = await Card.findOne({ front: req.body.front });
@@ -34,7 +33,7 @@ fischcardRouter
       //take saved card
       const createdCard = await Card.findOne({ front: req.body.front });
 
-      res.json({
+      res.status(201).json({
         message: `${req.body.front} saved `,
         card: createdCard,
       });
