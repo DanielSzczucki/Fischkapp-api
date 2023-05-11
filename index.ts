@@ -9,7 +9,7 @@ import { authMiddleware } from "./src/controllers/auth.controller";
 const PORT = parseInt(process.env.PORT) || 4000;
 const CORS_DOMAIN_ALLOWED = process.env.CORS_DOMAIN;
 
-const app = express();
+export const app = express();
 
 app.use(cors({ origin: CORS_DOMAIN_ALLOWED }));
 app.use(express.json());
