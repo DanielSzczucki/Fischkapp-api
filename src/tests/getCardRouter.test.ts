@@ -3,6 +3,7 @@ import { CardPayload } from "../utils/types";
 import mongoose from "mongoose";
 
 import { connectDB, dropDB, dropCollection } from "./setuptestdb";
+import { Response } from "express";
 
 describe("fishCard router", () => {
   let firstCardMock;
@@ -51,6 +52,7 @@ describe("fishCard router", () => {
     const res = await Card.find({});
 
     //express automaticlly make res.200 when its ok
+
     expect(res).toBeDefined();
   });
 
