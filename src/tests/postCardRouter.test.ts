@@ -58,7 +58,6 @@ describe("fishCard POST router", () => {
   it(" returns a status code of 400 when card with specific front value already exists", async () => {
     const res = await firstCardMock.save();
     const res2 = await secondCardMock.save();
-    console.log(res2);
 
     //returned existing card
     expect(res2.front).toBe(res.front);
