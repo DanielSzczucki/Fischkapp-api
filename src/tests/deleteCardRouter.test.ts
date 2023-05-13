@@ -1,10 +1,8 @@
 import { Card } from "../models/fischcardModel";
 import { CardPayload } from "../utils/types";
-import mongoose, { HydratedDocument, deleteModel } from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 import supertest from "supertest";
-
 import { connectDB, dropDB, dropCollection } from "./setuptestdb";
-import { deleteCardWhenTimePassed } from "../services/fischcard.service";
 import { app } from "../../index";
 
 const supertestConfig: { [key: string]: string } = {

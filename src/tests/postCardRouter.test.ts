@@ -1,8 +1,7 @@
 import { Card } from "../models/fischcardModel";
 import { CardPayload } from "../utils/types";
-import mongoose, { HydratedDocument } from "mongoose";
+import { HydratedDocument } from "mongoose";
 import { connectDB, dropDB, dropCollection } from "./setuptestdb";
-
 import supertest from "supertest";
 import { app } from "../../index";
 

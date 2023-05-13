@@ -8,7 +8,6 @@ import {
 import { db } from "../utils/db";
 import {
   cardValidationByFrontValue,
-  checkIsTimePassed,
   deleteCardWhenTimePassed,
   getAllCardsByQuery,
   prepareQueryForDb,

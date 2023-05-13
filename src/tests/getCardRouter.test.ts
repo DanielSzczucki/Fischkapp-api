@@ -59,37 +59,36 @@ describe("fishCard router", () => {
   });
 
   it("returns an array of flashcards in the correct order.", async () => {
-    const res = await Card.find({}).sort({
-      date: "asc",
-    });
+    const res = await api.get(`/cards`);
 
-    const firstCardDate = new Date(res[0].date).getTime();
+    const firstCardDate = new Date(res.body.cards[0].date).getTime();
 
-    const secondCardDate = new Date(res[1].date).getTime();
+    const secondCardDate = new Date(res.body.cards[1].date).getTime();
 
     expect(+secondCardDate).toBeGreaterThan(+firstCardDate);
   });
 
   it("returns the correct number of flashcards.", async () => {
-    const res = await Card.find({});
-
-    expect(res).toHaveLength(initialCards.length);
+    const res = await api.get(`/cards`);
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
   });
 
   it(" returns the correct number of flashcards written by the requested author.", async () => {
-    const query = { author: { $regex: "author", $options: "i" } };
-    const res = await Card.find(query).sort({
-      date: "asc",
-    });
+    const res = await api.get(`/cards/author/author`);
 
-    expect(res).toHaveLength(initialCards.length);
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
+
+    expect(cards).toHaveLength(initialCards.length);
   });
 
   it("returns the correct number of flashcards with the requested tag.", async () => {
-    const query = { tags: { $regex: "other", $options: "i" } };
-    const res = await Card.find(query).sort({
-      date: "asc",
-    });
-    expect(res).toHaveLength(initialCards.length);
+    const res = await api.get(`/cards/tags/other`);
+
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
+
+    expect(cards).toHaveLength(initialCards.length);
   });
 });
