@@ -173,10 +173,6 @@ fischcardRouter
         return;
       }
 
-      //sprawdz czas
-
-      // const is5MinutesPassed = checkIsTimePassed(foundCard, 5);
-
       const is5MinutesPassed: boolean = await deleteCardWhenTimePassed(
         foundCard,
         5
@@ -194,8 +190,6 @@ fischcardRouter
         });
       }
     } catch (error) {
-      console.log("err", error);
-
       res.status(500).json({
         message: "Something went wrong",
         cards: null,
