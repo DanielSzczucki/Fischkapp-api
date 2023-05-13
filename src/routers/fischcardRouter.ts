@@ -8,6 +8,7 @@ import {
 import { db } from "../utils/db";
 import {
   cardValidationByFrontValue,
+  checkIsTimePassed,
   deleteCardWhenTimePassed,
   getAllCardsByQuery,
   prepareQueryForDb,
@@ -160,25 +161,41 @@ fischcardRouter
 
     try {
       const foundCard: CardPayload = await Card.findById(req.params.id);
+
+      console.log("Znaleziona karta", foundCard);
+
       //if card does'nt exist
-      if (!foundCard) {
+      if (foundCard === null) {
         res.status(404).json({
           message: `There is no card with id:${req.params.id}`,
           card: null,
         });
+        return;
       }
 
-      const deletedCard: CardPayload = await deleteCardWhenTimePassed(
+      //sprawdz czas
+
+      // const is5MinutesPassed = checkIsTimePassed(foundCard, 5);
+
+      const is5MinutesPassed: boolean = await deleteCardWhenTimePassed(
         foundCard,
         5
       );
 
-      res.json({
-        message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
-        card: deletedCard,
-      });
+      if (!is5MinutesPassed) {
+        res.status(403).json({
+          message: `Cant delete ${foundCard.front} Id: ${foundCard._id}, 5 minut passed`,
+          card: foundCard,
+        });
+      } else {
+        res.status(204).json({
+          message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
+          card: null,
+        });
+      }
     } catch (error) {
-      console.log("err", error)
+      console.log("err", error);
+
       res.status(500).json({
         message: "Something went wrong",
         cards: null,
