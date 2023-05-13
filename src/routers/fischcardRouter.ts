@@ -40,7 +40,7 @@ fischcardRouter
       });
     } else {
       //is exist? abort and sent document
-      res.status(409).json({
+      res.status(400).json({
         message: "This card arleady exist in database",
         card: foundCard,
       });
