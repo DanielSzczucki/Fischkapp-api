@@ -10,7 +10,7 @@
     "build": "npm install && tsc",
     "start": "node ./dist/index.js",
     "server": "ts-node index.ts",
-    "test": "jest --runInBand --detectOpenHandles"
+    "test": "NODE_ENV=test jest --forceExit --runInBand --detectOpenHandles"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
