@@ -8,6 +8,7 @@
     "lib": ["es6"],
     "outDir": "./dist",
     "esModuleInterop": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "resolveJsonModule": true
   }
 }
