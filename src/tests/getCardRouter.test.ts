@@ -1,9 +1,15 @@
 import { Card } from "../models/fischcardModel";
 import { CardPayload } from "../utils/types";
 import mongoose from "mongoose";
-
+import supertest from "supertest";
+import { app } from "../../index";
 import { connectDB, dropDB, dropCollection } from "./setuptestdb";
-import { Response } from "express";
+
+const supertestConfig: { [key: string]: string } = {
+  Authorization: "secret",
+};
+
+const api = supertest(app);
 
 describe("fishCard router", () => {
   let firstCardMock;
@@ -33,7 +39,7 @@ describe("fishCard router", () => {
       back: "black back card",
       front: "green fron card",
       tags: ["random tag", "other random tag"],
-      date: new Date("2023-05-02T14:05:33.310Z"),
+      date: new Date(),
     };
     firstCardMock = new Card(firstCardData);
     secondCardMock = new Card(secondCardData);
@@ -49,52 +55,40 @@ describe("fishCard router", () => {
   });
 
   it("get all card route, should return status code of 200", async () => {
-    const res = await Card.find({});
-
-    //express automaticlly make res.200 when its ok
-
-    expect(res).toBeDefined();
+    const cards = await api.get(`/cards`).expect(200);
   });
 
   it("returns an array of flashcards in the correct order.", async () => {
-    const res = await Card.find({});
+    const res = await api.get(`/cards`);
 
-    const firstCardDate = res[0].date;
+    const firstCardDate = new Date(res.body.cards[0].date).getTime();
 
-    const secondCardDate = res[1].date;
+    const secondCardDate = new Date(res.body.cards[1].date).getTime();
 
     expect(+secondCardDate).toBeGreaterThan(+firstCardDate);
   });
 
   it("returns the correct number of flashcards.", async () => {
-    const res = await Card.find({});
-
-    expect(res).toHaveLength(initialCards.length);
-  });
-
-  it("function returns an array of flashcards written by the requested author in the correct order.", async () => {
-    const res = await Card.find({});
-
-    const firstCardDate = new Date(res[0].date);
-    const secondCardDate = new Date(res[1].date);
-
-    expect(+secondCardDate).toBeGreaterThan(+firstCardDate);
+    const res = await api.get(`/cards`);
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
   });
 
   it(" returns the correct number of flashcards written by the requested author.", async () => {
-    const query = { author: { $regex: "author", $options: "i" } };
-    const res = await Card.find(query).sort({
-      date: "asc",
-    });
+    const res = await api.get(`/cards/author/author`);
 
-    expect(res).toHaveLength(2);
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
+
+    expect(cards).toHaveLength(initialCards.length);
   });
 
   it("returns the correct number of flashcards with the requested tag.", async () => {
-    const query = { tags: { $regex: "other", $options: "i" } };
-    const res = await Card.find(query).sort({
-      date: "asc",
-    });
-    expect(res).toHaveLength(initialCards.length);
+    const res = await api.get(`/cards/tags/other`);
+
+    const cards = res.body.cards;
+    expect(cards).toHaveLength(initialCards.length);
+
+    expect(cards).toHaveLength(initialCards.length);
   });
 });

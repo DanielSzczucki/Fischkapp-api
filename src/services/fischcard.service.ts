@@ -55,17 +55,29 @@ export const updateCard = async (
   return updatedCard;
 };
 
-export const deleteCardWhenTimePassed = async (
-  card: CardPayload,
-  minutes: number
-): Promise<CardPayload> => {
+export const checkIsTimePassed = (card: CardPayload, minutes: number) => {
   const currentTime = new Date();
   const cardCreationTime = new Date(`${card.date}`);
   const timeDifferenceInMinutes =
     (currentTime.getTime() - cardCreationTime.getTime()) / 60000;
 
-  if (timeDifferenceInMinutes <= minutes) {
+  return timeDifferenceInMinutes <= minutes ? true : false;
+};
+
+export const deleteCardWhenTimePassed = async (
+  card: CardPayload,
+  minutes: number
+) => {
+  const is5minutPassed = checkIsTimePassed(card, minutes);
+
+  if (is5minutPassed) {
+    //if is true, cant delete the card
+    return true;
+  } else {
+    //if is false - delete card
     const deletedCard = await Card.findByIdAndDelete(card._id);
-    return deletedCard as CardPayload;
-  } else throw Error("5 miutes passed, you cant delete the post");
+
+    //and return is false
+    return false;
+  }
 };

@@ -39,7 +39,7 @@ fischcardRouter
       });
     } else {
       //is exist? abort and sent document
-      res.status(409).json({
+      res.status(400).json({
         message: "This card arleady exist in database",
         card: foundCard,
       });
@@ -160,23 +160,34 @@ fischcardRouter
 
     try {
       const foundCard: CardPayload = await Card.findById(req.params.id);
+
+      console.log("Znaleziona karta", foundCard);
+
       //if card does'nt exist
-      if (!foundCard) {
+      if (foundCard === null) {
         res.status(404).json({
           message: `There is no card with id:${req.params.id}`,
           card: null,
         });
+        return;
       }
 
-      const deletedCard: CardPayload = await deleteCardWhenTimePassed(
+      const is5MinutesPassed: boolean = await deleteCardWhenTimePassed(
         foundCard,
         5
       );
 
-      res.json({
-        message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
-        card: deletedCard,
-      });
+      if (!is5MinutesPassed) {
+        res.status(403).json({
+          message: `Cant delete ${foundCard.front} Id: ${foundCard._id}, 5 minut passed`,
+          card: foundCard,
+        });
+      } else {
+        res.status(204).json({
+          message: `Card ${foundCard.front} Id: ${foundCard._id} was deleted`,
+          card: null,
+        });
+      }
     } catch (error) {
       res.status(500).json({
         message: "Something went wrong",
