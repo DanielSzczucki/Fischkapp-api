@@ -2,16 +2,27 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "FISCHKAPI",
+    "description": "Simple REST API to menage fischCards"
   },
+
   "host": "localhost:4000",
   "basePath": "/",
   "schemes": ["http"],
+
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+
   "paths": {
     "/cards": {
       "post": {
-        "description": "",
+        "description": "Card has defined type in:`./src/utils/types/CreateCardPayload` ",
+
         "parameters": [
           {
             "name": "body",
@@ -19,8 +30,22 @@
             "schema": {
               "type": "object",
               "properties": {
+                "author": {
+                  "example": "string"
+                },
                 "front": {
-                  "example": "any"
+                  "example": "string"
+                },
+
+                "back": {
+                  "example": "string"
+                },
+
+                "tags": {
+                  "example": "string[]"
+                },
+                "date": {
+                  "example": "new Date()"
                 }
               }
             }
@@ -33,8 +58,14 @@
           "400": {
             "description": "Bad Request"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       },
+
       "get": {
         "description": "",
         "parameters": [],
@@ -48,12 +79,18 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/cards/{id}": {
       "put": {
-        "description": "",
+        "description": "Card has defined type in:`./src/utils/types/UpdateCardPayload` ",
+
         "parameters": [
           {
             "name": "id",
@@ -68,7 +105,13 @@
               "type": "object",
               "properties": {
                 "front": {
-                  "example": "any"
+                  "example": "string"
+                },
+                "back": {
+                  "example": "string"
+                },
+                "tags": {
+                  "example": "string[]"
                 }
               }
             }
@@ -84,7 +127,12 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       },
       "delete": {
         "description": "",
@@ -109,7 +157,12 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/cards/author/{author}": {
@@ -133,7 +186,12 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/cards/tags/{tag}": {
@@ -157,7 +215,12 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     }
   }
